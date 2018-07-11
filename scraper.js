@@ -99,16 +99,3 @@ function scraper(option, callback) {
 		}
 	});
 }
-
-//테스트
-/*scraper({
-	url : string,
-	cookie : string,
-	isDynamic : boolean
-}, (result, savePath) => {
-	if(result) {
-		console.log(savePath + '에 생성하였습니다.');
-	}else{
-		console.error('스크랩에 실패하였습니다.');
-	}
-});*/

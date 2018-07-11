@@ -19,7 +19,7 @@ cookie | string | 쿠키
 isDynamic | boolean | 동적여부
 
 ## 사용법
-1. scraper.js를 열어 맨 아래 주석 구문을 해제한다.
+1. scraper.js를 열어 맨 아래 구문을 복사하여 붙여넣는다.
 2. url과, cookie와 isDynamic 옵션을 작성한다.
 3. 노드로 scraper.js를 실행한다.
 
