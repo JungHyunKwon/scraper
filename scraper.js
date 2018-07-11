@@ -44,7 +44,7 @@ function getNamespace(value) {
 
 /**
  * @name 네임스페이스 얻기
- * @param {obejct {url : string, cookie : string, isDynamic : boolean}} option
+ * @param {obejct} option {url : string, cookie : string, isDynamic : boolean}
  * @param {function} callback
  * @since 2018-07-10
  */
