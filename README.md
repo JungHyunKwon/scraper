@@ -1,7 +1,7 @@
 # scraper v1.0.0
 NodeJS로 만들었으며 웹페이지를 스크랩하는 도구입니다.
 
-## website-scrape
+## website-scraper
 - <https://github.com/website-scraper/node-website-scraper>
 - <https://github.com/website-scraper/node-website-scraper-phantom>
 
