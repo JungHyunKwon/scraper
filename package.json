@@ -1,0 +1,15 @@
+{
+  "name": "scraper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node scraper.js"
+  },
+  "author": "JungHyunKwon",
+  "license": "ISC",
+  "dependencies": {
+    "website-scraper": "^3.3.3",
+    "website-scraper-phantom": "^0.1.0"
+  }
+}
