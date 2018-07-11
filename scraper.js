@@ -100,6 +100,7 @@ function scraper(option, callback) {
 	});
 }
 
+//테스트
 /*scraper({
 	url : string,
 	cookie : string,
