@@ -10,7 +10,12 @@ const fs = require('fs'),
 	  url = require('url'),
 	  scrape = require('website-scraper'), // {@link https://github.com/website-scraper/node-website-scraper}
 	  phantomHTML = require('website-scraper-phantom'), // {@link https://github.com/website-scraper/node-website-scraper-phantom}
-	  baseDirectory = './dist/';
+	  baseDirectory = './dist/',
+	  readline = require('readline'),
+	  rl = readline.createInterface({
+	      input : process.stdin,
+		  output : process.stdout
+	  });
 
 /**
  * @name 10미만 0붙이기
@@ -99,3 +104,29 @@ function scraper(option, callback) {
 		}
 	});
 }
+
+//질문
+rl.question('주소 : ', (url) => {
+	if(url) {
+		rl.question('쿠키 : ', (cookie) => {
+			rl.question('동적입니까? ', (isDynamic) => {
+				scraper({
+					url : url,
+					cookie : cookie,
+					isDynamic : (isDynamic === 'true') ? true : false
+				}, (result, savePath) => {
+					if(result) {
+						console.log(savePath + '에 생성하였습니다.');
+					}else{
+						console.error('스크랩에 실패하였습니다.');
+					}
+
+					rl.close();
+				});
+			});
+		});
+	}else{
+		console.error('주소를 입력해주세요.');
+		rl.close();
+	}
+});
