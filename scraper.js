@@ -110,6 +110,8 @@ rl.question('주소 : ', (url) => {
 	if(url) {
 		rl.question('쿠키 : ', (cookie) => {
 			rl.question('동적입니까? ', (isDynamic) => {
+				console.log('잠시만 기다려주세요.');
+
 				scraper({
 					url : url,
 					cookie : cookie,
