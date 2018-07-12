@@ -9,7 +9,7 @@
 const fs = require('fs'),
 	  url = require('url'),
 	  scrape = require('website-scraper'), // {@link https://github.com/website-scraper/node-website-scraper}
-	  phantomHTML = require('website-scraper-phantom'), // {@link https://github.com/website-scraper/node-website-scraper-phantom}
+	  phantomHtml = require('website-scraper-phantom'), // {@link https://github.com/website-scraper/node-website-scraper-phantom}
 	  baseDirectory = './dist/',
 	  readline = require('readline'),
 	  rl = readline.createInterface({
@@ -86,7 +86,7 @@ function scraper(option, callback) {
 		//recursive : true,
 		//ignoreErrors : false,
 		prettifyUrls : true,
-		httpResponseHandler : (option.isDynamic) ? phantomHTML : '',
+		httpResponseHandler : (option.isDynamic) ? phantomHtml : '',
 		request : {
 			headers : {
 				'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0',
