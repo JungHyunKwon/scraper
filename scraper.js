@@ -68,7 +68,7 @@ function scraper(option, callback) {
 		console.error(baseDirectory + '폴더가 없습니다.');
 	}
 
-	//dist 폴더가 없을때 폴더생성
+	//baseDirectory 폴더가 없을때 폴더생성
 	if(!isBaseDirectory) {
 		fs.mkdirSync(baseDirectory);
 		console.log(baseDirectory + '에 폴더를 생성 하였습니다.');
