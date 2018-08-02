@@ -55,12 +55,12 @@ function getNamespace(value) {
  */
 function scraper(option, callback) {
 	let savePath = baseDirectory + getNamespace(url.parse(option.url).host || 'unknown'),
-		isDist = false;
+		isBaseDirectory = false;
 
 	try {
 		//폴더일때
 		if(fs.statSync(baseDirectory).isDirectory()) {
-			isDist = true;
+			isBaseDirectory = true;
 		}
 
 	//폴더가 없으면 오류발생
@@ -69,7 +69,7 @@ function scraper(option, callback) {
 	}
 
 	//dist 폴더가 없을때 폴더생성
-	if(!isDist) {
+	if(!isBaseDirectory) {
 		fs.mkdirSync(baseDirectory);
 		console.log(baseDirectory + '에 폴더를 생성 하였습니다.');
 	}
