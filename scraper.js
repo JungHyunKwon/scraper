@@ -19,13 +19,12 @@ const fs = require('fs'),
 
 /**
  * @name 10미만 0붙이기
- * @param {number} value
- * @return {*}
- * @since 2018-07-10
+ * @return {number || string}
+ * @since 2018-07-13
  */
-function pad(value) {
-	return (value < 10) ? '0' + value : value;
-}
+Number.prototype.pad = function() {
+	return (this > 10) ? this : '0' + this;	
+};
 
 /**
  * @name 네임스페이스 얻기
@@ -36,13 +35,13 @@ function pad(value) {
 function getNamespace(value) {
 	let date = new Date(),
 		year = date.getFullYear(),
-		month = pad(date.getMonth() + 1),
-		day = pad(date.getDate()),
+		month = (date.getMonth() + 1).pad(),
+		day = date.getDate().pad(),
 		hours = date.getHours(),
-		hour = pad(hours % 12 || 12),
+		hour = (hours % 12 || 12).pad(),
 		meridiem = (hours >= 12) ? '오후' : '오전',
-		minute = pad(date.getMinutes()),
-		second = pad(date.getSeconds());
+		minute = date.getMinutes().pad(),
+		second = date.getSeconds().pad();
 
 	return value + ' - ' + year + '년 ' + month + '월 ' + day + '일 ' + meridiem + ' ' + hour + '시 ' + minute + '분 ' + second + '초';
 }
