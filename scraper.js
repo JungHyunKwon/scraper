@@ -27,12 +27,12 @@ Number.prototype.pad = function() {
 };
 
 /**
- * @name 네임스페이스 얻기
+ * @name 이름 얻기
  * @param {string} value
  * @return {string}
  * @since 2018-07-10
  */
-function getNamespace(value) {
+function getName(value) {
 	let date = new Date(),
 		year = date.getFullYear(),
 		month = (date.getMonth() + 1).pad(),
@@ -53,7 +53,7 @@ function getNamespace(value) {
  * @since 2018-07-10
  */
 function scraper(option, callback) {
-	let savePath = baseDirectory + getNamespace(url.parse(option.url).host || 'unknown'),
+	let savePath = baseDirectory + getName(url.parse(option.url).host || 'unknown'),
 		isBaseDirectory = false;
 
 	try {
@@ -114,7 +114,7 @@ rl.question('주소 : ', (url) => {
 				scraper({
 					url : url,
 					cookie : cookie,
-					isDynamic : (isDynamic === 'true') ? true : false
+					isDynamic : (isDynamic.toLowerCase() === 'true') ? true : false
 				}, (result, savePath) => {
 					if(result) {
 						console.log(savePath + '에 생성하였습니다.');
