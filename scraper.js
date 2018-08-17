@@ -74,7 +74,7 @@ function scraper(option, callback) {
 	}
 
 	//객체가 아닐때
-	if(!option instanceof Object) {
+	if(!(option instanceof Object && option.constructor === Object)) {
 		option = {};
 	}
 	
