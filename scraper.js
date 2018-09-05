@@ -106,6 +106,7 @@ function scraper(option, callback) {
 
 //질문
 rl.question('주소 : ', (url) => {
+	//값이 있을때
 	if(url) {
 		rl.question('쿠키 : ', (cookie) => {
 			rl.question('동적입니까? ', (isDynamic) => {
@@ -116,6 +117,7 @@ rl.question('주소 : ', (url) => {
 					cookie : cookie,
 					isDynamic : (isDynamic.toLowerCase() === 'true') ? true : false
 				}, (result, savePath) => {
+					//생성했을때
 					if(result) {
 						console.log(savePath + '에 생성하였습니다.');
 					}else{
