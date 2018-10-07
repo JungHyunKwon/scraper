@@ -48,12 +48,12 @@ function getName(value) {
 
 /**
  * @name 스크랩
- * @param {obejct} option {url : string, cookie : string, isDynamic : boolean}
+ * @param {obejct} options {url : string, cookie : string, isDynamic : boolean}
  * @param {function} callback
  * @since 2018-07-10
  */
-function scraper(option, callback) {
-	let savePath = baseDirectory + getName(url.parse(option.url).host || 'unknown'),
+function scraper(options, callback) {
+	let savePath = baseDirectory + getName(url.parse(options.url).host || 'unknown'),
 		isBaseDirectory = false;
 
 	try {
@@ -74,22 +74,22 @@ function scraper(option, callback) {
 	}
 
 	//객체가 아닐때
-	if(!(option instanceof Object && option.constructor === Object)) {
-		option = {};
+	if(!(options instanceof Object && options.constructor === Object)) {
+		options = {};
 	}
 	
 	scrape({
-		urls : [option.url],
+		urls : [options.url],
 		directory : savePath,
 		updateMissingSources : true,
 		//recursive : true,
 		//ignoreErrors : false,
 		prettifyUrls : true,
-		httpResponseHandler : (option.isDynamic) ? phantomHtml : '',
+		httpResponseHandler : (options.isDynamic) ? phantomHtml : '',
 		request : {
 			headers : {
 				'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0',
-				'Cookie' : option.cookie || ''
+				'Cookie' : options.cookie || ''
 			}
 		}
 	}, (error, result) => {
