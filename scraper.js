@@ -27,6 +27,15 @@ Number.prototype.pad = function() {
 };
 
 /**
+ * @name 유효한 파일명으로 거르기
+ * @return {string}
+ * @since 2018-07-13
+ */
+String.prototype.filterFileName = function() {
+	return this.replace(/[\/:"*?"<>|]/g, '');
+};
+
+/**
  * @name 이름 얻기
  * @param {string} value
  * @return {string}
@@ -43,7 +52,7 @@ function getName(value) {
 		minute = date.getMinutes().pad(),
 		second = date.getSeconds().pad();
 
-	return value + ' - ' + year + '년 ' + month + '월 ' + day + '일 ' + meridiem + ' ' + hour + '시 ' + minute + '분 ' + second + '초';
+	return ((typeof value === 'string') ? value.filterFileName() : 'unknown') + ' - ' + year + '년 ' + month + '월 ' + day + '일 ' + meridiem + ' ' + hour + '시 ' + minute + '분 ' + second + '초';
 }
 
 /**
@@ -53,7 +62,7 @@ function getName(value) {
  * @since 2018-07-10
  */
 function scraper(options, callback) {
-	let savePath = baseDirectory + getName(url.parse(options.url).host || 'unknown'),
+	let savePath = baseDirectory + getName(url.parse(options.url).host),
 		isBaseDirectory = false;
 
 	try {
