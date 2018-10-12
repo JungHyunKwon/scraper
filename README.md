@@ -15,5 +15,5 @@ isDynamic | boolean | 동적여부
 
 ## CLI
 ````javascript
-node scraper.js
+node scraper
 ````
