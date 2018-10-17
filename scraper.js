@@ -166,7 +166,7 @@ rl.question('주소 : ', (url) => {
 				scraper({
 					url : url,
 					cookie : cookie,
-					isDynamic : (isDynamic.toLowerCase() === 'true') ? true : false
+					isDynamic : isDynamic.toLowerCase() === 'true'
 				}, (result, savePath) => {
 					//생성했을때
 					if(result) {
