@@ -9,7 +9,7 @@
 const fs = require('fs'),
 	  url = require('url'),
 	  scrape = require('website-scraper'), // {@link https://github.com/website-scraper/node-website-scraper}
-	  phantomHtml = require('website-scraper-phantom'), // {@link https://github.com/website-scraper/node-website-scraper-phantom}
+	  phantomHTML = require('website-scraper-phantom'), // {@link https://github.com/website-scraper/node-website-scraper-phantom}
 	  baseDirectory = './dist/',
 	  readline = require('readline'),
 	  rl = readline.createInterface({
@@ -104,13 +104,13 @@ function getType(value) {
  * @since 2018-07-10
  */
 function scraper(options, callback) {
-	let savePath = baseDirectory + getName(url.parse(options.url).host),
-		isBaseDirectory = false;
+	let saveDirectory = baseDirectory + getName(url.parse(options.url).host),
+		hasBaseDirectory = false;
 
 	try {
 		//폴더일때
 		if(fs.statSync(baseDirectory).isDirectory()) {
-			isBaseDirectory = true;
+			hasBaseDirectory = true;
 		}
 
 	//폴더가 없으면 오류발생
@@ -119,7 +119,7 @@ function scraper(options, callback) {
 	}
 
 	//baseDirectory 폴더가 없을때 폴더생성
-	if(!isBaseDirectory) {
+	if(!hasBaseDirectory) {
 		fs.mkdirSync(baseDirectory);
 		console.log(baseDirectory + '에 폴더를 생성 하였습니다.');
 	}
@@ -130,13 +130,13 @@ function scraper(options, callback) {
 	}
 	
 	scrape({
-		urls : [options.url],
-		directory : savePath,
+		urls : options.url,
+		directory : saveDirectory,
 		updateMissingSources : true,
 		//recursive : true,
 		//ignoreErrors : false,
 		prettifyUrls : true,
-		httpResponseHandler : (options.isDynamic) ? phantomHtml : '',
+		httpResponseHandler : (options.isDynamic) ? phantomHTML : '',
 		request : {
 			headers : {
 				'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0',
@@ -150,7 +150,7 @@ function scraper(options, callback) {
 		
 		//함수일때
 		}else if(typeof callback === 'function') {
-			callback(result[0].saved, savePath);
+			callback(result[0].saved, saveDirectory);
 		}
 	});
 }
@@ -167,10 +167,10 @@ rl.question('주소 : ', (url) => {
 					url : url,
 					cookie : cookie,
 					isDynamic : isDynamic.toLowerCase() === 'true'
-				}, (result, savePath) => {
+				}, (result, saveDirectory) => {
 					//생성했을때
 					if(result) {
-						console.log(savePath + '에 생성하였습니다.');
+						console.log(saveDirectory + '에 생성하였습니다.');
 					}else{
 						console.error('스크랩에 실패하였습니다.');
 					}
