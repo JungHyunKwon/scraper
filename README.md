@@ -11,7 +11,7 @@ NodeJS로 만들었으며 웹페이지를 스크랩하는 도구입니다.
 | :-- | :-- | :-- |
 url | string | 주소
 cookie | string | 쿠키
-isDynamic | boolean | 동적여부
+isDynamic | boolean | 동적 여부
 
 ## CLI
 ````javascript
