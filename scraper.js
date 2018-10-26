@@ -18,7 +18,7 @@ const fs = require('fs'),
 	  });
 
 /**
- * @name 10미만 0붙이기
+ * @name 10미만 0 붙이기
  * @return {number || string}
  * @since 2018-07-13
  */
@@ -64,29 +64,29 @@ function getName(value) {
 function getType(value) {
 	let result;
 	
-	//매개변수가 있을때
+	//매개변수가 있을 때
 	if(arguments.length) {
-		//null일때
+		//null일 때
 		if(value === null) {
 			result = 'null';
 		
-		//undefined일때
+		//undefined일 때
 		}else if(value === undefined) {
 			result = 'undefined';
 		}else{
 			result = Object.prototype.toString.call(value).toLowerCase().replace('[object ', '').replace(']', '');
 			
-			//Invalid Date일때
+			//Invalid Date일 때
 			if(result === 'date' && isNaN(new Date(value))) {
 				result = 'Invalid Date';
 			
-			//숫자일때
+			//숫자일 때
 			}else if(result === 'number') {
-				//NaN일때
+				//NaN일 때
 				if(isNaN(value)) {
 					result = 'NaN';
 				
-				//Infinity일때
+				//Infinity일 때
 				}else if(!isFinite(value)) {
 					result = value.toString();
 				}
@@ -108,7 +108,7 @@ function scraper(options, callback) {
 		hasBaseDirectory = false;
 
 	try {
-		//폴더일때
+		//폴더일 때
 		if(fs.statSync(baseDirectory).isDirectory()) {
 			hasBaseDirectory = true;
 		}
@@ -118,13 +118,13 @@ function scraper(options, callback) {
 		console.error(baseDirectory + '폴더가 없습니다.');
 	}
 
-	//baseDirectory 폴더가 없을때 폴더생성
+	//baseDirectory 폴더가 없을 때 폴더생성
 	if(!hasBaseDirectory) {
 		fs.mkdirSync(baseDirectory);
 		console.log(baseDirectory + '에 폴더를 생성 하였습니다.');
 	}
 
-	//객체가 아닐때
+	//객체가 아닐 때
 	if(getType(options) !== 'object') {
 		options = {};
 	}
@@ -144,11 +144,11 @@ function scraper(options, callback) {
 			}
 		}
 	}, (error, result) => {
-		//오류가 있을때
+		//오류가 있을 때
 		if(error) {
 			console.error(error);
 		
-		//함수일때
+		//함수일 때
 		}else if(typeof callback === 'function') {
 			callback(result[0].saved, saveDirectory);
 		}
@@ -157,7 +157,7 @@ function scraper(options, callback) {
 
 //질문
 rl.question('주소 : ', (url) => {
-	//값이 있을때
+	//값이 있을 때
 	if(url) {
 		rl.question('쿠키 : ', (cookie) => {
 			rl.question('동적입니까? ', (isDynamic) => {
@@ -168,7 +168,7 @@ rl.question('주소 : ', (url) => {
 					cookie : cookie,
 					isDynamic : isDynamic.toLowerCase() === 'true'
 				}, (result, saveDirectory) => {
-					//생성했을때
+					//생성했을 때
 					if(result) {
 						console.log(saveDirectory + '에 생성하였습니다.');
 					}else{
