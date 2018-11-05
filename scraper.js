@@ -90,10 +90,6 @@ function getType(value) {
 				}else if(!isFinite(value)) {
 					result = value.toString();
 				}
-			
-			//매개변수일 때
-			}else if(result === 'arguments') {
-				result = 'object';
 			}
 		}
 	}
