@@ -62,11 +62,11 @@ function getName(value) {
  * @return {string || undefined}
  */
 function getType(value) {
-	let result;
+	var result;
 	
 	//매개변수가 있을 때
 	if(arguments.length) {
-		//null일 때
+		//null일때
 		if(value === null) {
 			result = 'null';
 		
@@ -90,6 +90,10 @@ function getType(value) {
 				}else if(!isFinite(value)) {
 					result = value.toString();
 				}
+			
+			//매개변수일 때
+			}else if(result === 'arguments') {
+				result = 'object';
 			}
 		}
 	}
