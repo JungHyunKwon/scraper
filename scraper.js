@@ -56,48 +56,6 @@ function getName(value) {
 }
 
 /**
- * @name 형태 얻기
- * @since 2017-12-06
- * @param {*} value
- * @return {string || undefined}
- */
-function getType(value) {
-	var result;
-	
-	//매개변수가 있을 때
-	if(arguments.length) {
-		//null일때
-		if(value === null) {
-			result = 'null';
-		
-		//undefined일 때
-		}else if(value === undefined) {
-			result = 'undefined';
-		}else{
-			result = Object.prototype.toString.call(value).toLowerCase().replace('[object ', '').replace(']', '');
-			
-			//Invalid Date일 때
-			if(result === 'date' && isNaN(new Date(value))) {
-				result = 'Invalid Date';
-			
-			//숫자일 때
-			}else if(result === 'number') {
-				//NaN일 때
-				if(isNaN(value)) {
-					result = 'NaN';
-				
-				//Infinity일 때
-				}else if(!isFinite(value)) {
-					result = value.toString();
-				}
-			}
-		}
-	}
-
-	return result;
-}
-
-/**
  * @name 스크랩
  * @param {obejct} options {url : string, cookie : string, isDynamic : boolean}
  * @param {function} callback
@@ -125,7 +83,7 @@ function scraper(options, callback) {
 	}
 
 	//객체가 아닐 때
-	if(getType(options) !== 'object') {
+	if(!(options instanceof Object)) {
 		options = {};
 	}
 	
