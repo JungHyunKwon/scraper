@@ -56,58 +56,32 @@ function getName(value) {
 }
 
 /**
- * @name 형태 얻기
- * @since 2017-12-06
- * @param {*} value
- * @return {string}
- */
-function getType(value) {
-	return Object.prototype.toString.call(value).slice(8, -1).toLowerCase();
-}
-
-/**
- * @name 자료형 복사
- * @since 2017-12-06
- * @param {*} value
- * @param {boolean} deep
- * @return {*}
- */
-function copyType(value, deep) {
-	var isDeep = deep === true,
-		valueType = getType(value),
-		result = {};
-
-	//객체일 때
-	if(valueType === 'object' || valueType === 'arguments') {
-		for(var i in value) {
-			if(isDeep || value.hasOwnProperty(i)) {
-				result[i] = copyType(value[i], isDeep);
-			}
-		}
-
-	//배열일 때
-	}else if(valueType === 'array') {
-		result = value.slice();
-	}else{
-		result = value;
-	}
-
-	return result;
-}
-
-/**
  * @name 스크랩
  * @param {obejct} options {url : string, cookie : string, isDynamic : boolean}
  * @param {function} callback
  * @since 2018-07-10
  */
 function scraper(options, callback) {
-	let settings = copyType(options),
+	let settings = {
+			url : '',
+			cookie : '',
+			isDynamic : false
+		},
 		hasBaseDirectory = false;
 
 	//객체가 아닐 때
-	if(getType(settings) !== 'object') {
-		settings = {};
+	if(options) {
+		//문자일 때
+		if(typeof options.url === 'string') {
+			settings.url = options.url;	
+		}
+		
+		//문자일 때
+		if(typeof options.cookie === 'string') {
+			settings.cookie = options.cookie;
+		}
+		
+		settings.isDynamic = options.isDynamic === true;
 	}
 
 	let saveDirectory = baseDirectory + getName(url.parse(settings.url).host);
