@@ -56,14 +56,61 @@ function getName(value) {
 }
 
 /**
+ * @name 형태 얻기
+ * @since 2017-12-06
+ * @param {*} value
+ * @return {string}
+ */
+function getType(value) {
+	return Object.prototype.toString.call(value).slice(8, -1).toLowerCase();
+}
+
+/**
+ * @name 자료형 복사
+ * @since 2017-12-06
+ * @param {*} value
+ * @param {boolean} deep
+ * @return {*}
+ */
+function copyType(value, deep) {
+	var isDeep = deep === true,
+		valueType = getType(value),
+		result = {};
+
+	//객체일 때
+	if(valueType === 'object' || valueType === 'arguments') {
+		for(var i in value) {
+			if(isDeep || value.hasOwnProperty(i)) {
+				result[i] = copyType(value[i], isDeep);
+			}
+		}
+
+	//배열일 때
+	}else if(valueType === 'array') {
+		result = value.slice();
+	}else{
+		result = value;
+	}
+
+	return result;
+}
+
+/**
  * @name 스크랩
  * @param {obejct} options {url : string, cookie : string, isDynamic : boolean}
  * @param {function} callback
  * @since 2018-07-10
  */
 function scraper(options, callback) {
-	let saveDirectory = baseDirectory + getName(url.parse(options.url).host),
+	let settings = copyType(options),
 		hasBaseDirectory = false;
+
+	//객체가 아닐 때
+	if(getType(settings) !== 'object') {
+		settings = {};
+	}
+
+	let saveDirectory = baseDirectory + getName(url.parse(settings.url).host);
 
 	try {
 		//폴더일 때
@@ -81,24 +128,19 @@ function scraper(options, callback) {
 		fs.mkdirSync(baseDirectory);
 		console.log(baseDirectory + '에 폴더를 생성 하였습니다.');
 	}
-
-	//객체가 아닐 때
-	if(!(options instanceof Object)) {
-		options = {};
-	}
 	
 	scrape({
-		urls : options.url,
+		urls : settings.url,
 		directory : saveDirectory,
 		updateMissingSources : true,
 		//recursive : true,
 		//ignoreErrors : false,
 		prettifyUrls : true,
-		httpResponseHandler : (options.isDynamic) ? phantomHTML : '',
+		httpResponseHandler : (settings.isDynamic) ? phantomHTML : '',
 		request : {
 			headers : {
 				'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0',
-				'Cookie' : options.cookie || ''
+				'Cookie' : settings.cookie || ''
 			}
 		}
 	}, (error, result) => {
