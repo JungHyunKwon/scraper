@@ -56,10 +56,8 @@ function getName(value) {
 }
 
 /**
- * @name 스크랩
  * @param {obejct} options {url : string, cookie : string, isDynamic : boolean}
  * @param {function} callback
- * @since 2018-07-10
  */
 function scraper(options, callback) {
 	let settings = {
