@@ -19,21 +19,25 @@ const fs = require('fs'),
 
 /**
  * @name 10미만 0 붙이기
- * @return {number || string}
+ * @param {number} value
+ * @return {number}
  * @since 2018-07-13
  */
-Number.prototype.pad = function() {
-	return (10 > this) ? '0' + this : this;	
-};
+function pad(value) {
+	var result = NaN;
+	
+	//NaN이 아닐 때
+	if(typeof value === 'number' && !isNaN(value)) {
+		//0초과이면서 10미만일 때
+		if(value > 0 && 10 > value) {
+			result = '0' + value;	
+		}else{
+			result = value;
+		}
+	}
 
-/**
- * @name 유효한 파일명으로 거르기
- * @return {string}
- * @since 2018-07-13
- */
-String.prototype.filterFileName = function() {
-	return this.replace(/[\/:"*?"<>|]/g, '');
-};
+	return result;
+}
 
 /**
  * @name 이름 얻기
@@ -44,15 +48,15 @@ String.prototype.filterFileName = function() {
 function getName(value) {
 	let date = new Date(),
 		year = date.getFullYear(),
-		month = (date.getMonth() + 1).pad(),
-		day = date.getDate().pad(),
+		month = pad(date.getMonth() + 1),
+		day = pad(date.getDate()),
 		hours = date.getHours(),
-		hour = (hours % 12 || 12).pad(),
+		hour = pad(hours % 12 || 12),
 		meridiem = (hours >= 12) ? '오후' : '오전',
-		minute = date.getMinutes().pad(),
-		second = date.getSeconds().pad();
+		minute = pad(date.getMinutes()),
+		second = pad(date.getSeconds());
 
-	return ((typeof value === 'string') ? value.filterFileName() : 'unknown') + ' - ' + year + '년 ' + month + '월 ' + day + '일 ' + meridiem + ' ' + hour + '시 ' + minute + '분 ' + second + '초';
+	return ((typeof value === 'string') ? value.replace(/[\/:"*?"<>|]/g, '') : 'unknown') + ' - ' + year + '년 ' + month + '월 ' + day + '일 ' + meridiem + ' ' + hour + '시 ' + minute + '분 ' + second + '초';
 }
 
 /**
