@@ -23,7 +23,7 @@ const fs = require('fs'),
  * @since 2018-07-13
  */
 Number.prototype.pad = function() {
-	return (this > 10) ? this : '0' + this;	
+	return (10 > this) ? '0' + this : this;	
 };
 
 /**
@@ -60,71 +60,62 @@ function getName(value) {
  * @param {function} callback
  */
 function scraper(options, callback) {
-	let settings = {
-			url : '',
-			cookie : '',
-			isDynamic : false
-		},
-		hasBaseDirectory = false;
+	let isFunction = typeof callback === 'function';
 
-	//객체가 아닐 때
+	//객체일 때
 	if(options) {
 		//문자일 때
 		if(typeof options.url === 'string') {
-			settings.url = options.url;	
-		}
-		
-		//문자일 때
-		if(typeof options.cookie === 'string') {
-			settings.cookie = options.cookie;
-		}
-		
-		settings.isDynamic = options.isDynamic === true;
-	}
+			let hasBaseDirectory = false,
+				saveDirectory = baseDirectory + getName(url.parse(options.url).host);
 
-	let saveDirectory = baseDirectory + getName(url.parse(settings.url).host);
+			try {
+				//폴더일 때
+				if(fs.statSync(baseDirectory).isDirectory()) {
+					hasBaseDirectory = true;
+				}
 
-	try {
-		//폴더일 때
-		if(fs.statSync(baseDirectory).isDirectory()) {
-			hasBaseDirectory = true;
-		}
-
-	//폴더가 없으면 오류발생
-	}catch(e) {
-		console.error(baseDirectory + '폴더가 없습니다.');
-	}
-
-	//baseDirectory 폴더가 없을 때 폴더생성
-	if(!hasBaseDirectory) {
-		fs.mkdirSync(baseDirectory);
-		console.log(baseDirectory + '에 폴더를 생성 하였습니다.');
-	}
-	
-	scrape({
-		urls : settings.url,
-		directory : saveDirectory,
-		updateMissingSources : true,
-		//recursive : true,
-		//ignoreErrors : false,
-		prettifyUrls : true,
-		httpResponseHandler : (settings.isDynamic) ? phantomHTML : '',
-		request : {
-			headers : {
-				'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0',
-				'Cookie' : settings.cookie || ''
+			//폴더가 없으면 오류발생
+			}catch(e) {
+				console.error(baseDirectory + '폴더가 없습니다.');
 			}
+
+			//baseDirectory 폴더가 없을 때 폴더생성
+			if(!hasBaseDirectory) {
+				fs.mkdirSync(baseDirectory);
+				console.log(baseDirectory + '에 폴더를 생성 하였습니다.');
+			}
+			
+			scrape({
+				urls : options.url,
+				directory : saveDirectory,
+				updateMissingSources : true,
+				//recursive : true, //재귀
+				//ignoreErrors : false, //오류 무시
+				prettifyUrls : true,
+				httpResponseHandler : (options.isDynamic === true) ? phantomHTML : '',
+				request : {
+					headers : {
+						'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0',
+						'Cookie' : options.cookie || ''
+					}
+				}
+			}, (error, result) => {
+				//오류가 있을 때
+				if(error) {
+					console.error(error);
+				
+				//함수일 때
+				}else if(isFunction) {
+					callback(result[0].saved, saveDirectory);
+				}
+			});
+		}else{
+			console.error('options.url : 문자가 아닙니다.');
 		}
-	}, (error, result) => {
-		//오류가 있을 때
-		if(error) {
-			console.error(error);
-		
-		//함수일 때
-		}else if(typeof callback === 'function') {
-			callback(result[0].saved, saveDirectory);
-		}
-	});
+	}else{
+		console.error('options : 객체가 아닙니다.');
+	}
 }
 
 //질문
