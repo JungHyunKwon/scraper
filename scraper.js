@@ -60,8 +60,6 @@ function getName(value) {
  * @param {function} callback
  */
 function scraper(options, callback) {
-	let isFunction = typeof callback === 'function';
-
 	//객체일 때
 	if(options) {
 		//문자일 때
@@ -106,7 +104,7 @@ function scraper(options, callback) {
 					console.error(error);
 				
 				//함수일 때
-				}else if(isFunction) {
+				}else if(typeof callback === 'function') {
 					callback(result[0].saved, saveDirectory);
 				}
 			});
