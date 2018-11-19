@@ -40,6 +40,15 @@ function pad(value) {
 }
 
 /**
+ * @name 유효한 파일명으로 거르기
+ * @return {string}
+ * @since 2018-07-13
+ */
+function filterFileName(value) {
+	return (typeof value === 'string') ? value.replace(/[\/:"*?"<>|]/g, '') : '';
+}
+
+/**
  * @name 이름 얻기
  * @param {string} value
  * @return {string}
@@ -56,7 +65,7 @@ function getName(value) {
 		minute = pad(date.getMinutes()),
 		second = pad(date.getSeconds());
 
-	return ((typeof value === 'string') ? value.replace(/[\/:"*?"<>|]/g, '') : 'unknown') + ' - ' + year + '년 ' + month + '월 ' + day + '일 ' + meridiem + ' ' + hour + '시 ' + minute + '분 ' + second + '초';
+	return (filterFileName(value) || 'unknown') + ' - ' + year + '년 ' + month + '월 ' + day + '일 ' + meridiem + ' ' + hour + '시 ' + minute + '분 ' + second + '초';
 }
 
 /**
