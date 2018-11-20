@@ -24,7 +24,7 @@ const fs = require('fs'),
  * @since 2018-07-13
  */
 function pad(value) {
-	var result = NaN;
+	let result = NaN;
 	
 	//NaN이 아닐 때
 	if(typeof value === 'number' && !isNaN(value)) {
