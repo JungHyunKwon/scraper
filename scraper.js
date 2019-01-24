@@ -88,13 +88,13 @@ function scraper(options, callback) {
 
 			//폴더가 없으면 오류발생
 			}catch(e) {
-				console.error(baseDirectory + '폴더가 없습니다.');
+				//console.error(baseDirectory + '폴더가 없습니다.');
 			}
 
 			//baseDirectory 폴더가 없을 때 폴더생성
 			if(!hasBaseDirectory) {
 				fs.mkdirSync(baseDirectory);
-				console.log(baseDirectory + '에 폴더를 생성 하였습니다.');
+				//console.log(baseDirectory + '에 폴더를 생성 하였습니다.');
 			}
 			
 			scrape({
