@@ -7,7 +7,7 @@
 'use strict';
 
 const fs = require('fs'),
-	  url = require('url'),
+	  URL = require('url'),
 	  scrape = require('website-scraper'), // {@link https://github.com/website-scraper/node-website-scraper}
 	  phantomHTML = require('website-scraper-phantom'), // {@link https://github.com/website-scraper/node-website-scraper-phantom}
 	  baseDirectory = './dist/',
@@ -44,7 +44,7 @@ function pad(value) {
  * @return {string}
  * @since 2018-07-13
  */
-function filterFileName(value) {
+function filterFilename(value) {
 	return (typeof value === 'string') ? value.replace(/[\/:"*?"<>|]/g, '') : '';
 }
 
@@ -65,7 +65,7 @@ function getName(value) {
 		minute = pad(date.getMinutes()),
 		second = pad(date.getSeconds());
 
-	return (filterFileName(value) || 'unknown') + ' - ' + year + '년 ' + month + '월 ' + day + '일 ' + meridiem + ' ' + hour + '시 ' + minute + '분 ' + second + '초';
+	return (filterFilename(value) || 'unknown') + ' - ' + year + '년 ' + month + '월 ' + day + '일 ' + meridiem + ' ' + hour + '시 ' + minute + '분 ' + second + '초';
 }
 
 /**
@@ -75,10 +75,21 @@ function getName(value) {
 function scraper(options, callback) {
 	//객체일 때
 	if(options) {
+		let url = options.url;
+
 		//문자일 때
-		if(typeof options.url === 'string') {
+		if(typeof url === 'string') {
 			let hasBaseDirectory = false,
-				saveDirectory = baseDirectory + getName(url.parse(options.url).host);
+				saveDirectory = baseDirectory + getName(URL.parse(url).host),
+				cookie = options.cookie,
+				headers = {
+					'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0'
+				};
+			
+			//문자일 때
+			if(typeof cookie === 'string') {
+				headers.cookie = cookie;
+			}
 
 			try {
 				//폴더일 때
@@ -98,7 +109,7 @@ function scraper(options, callback) {
 			}
 			
 			scrape({
-				urls : options.url,
+				urls : url,
 				directory : saveDirectory,
 				updateMissingSources : true,
 				//recursive : true, //재귀
@@ -106,10 +117,7 @@ function scraper(options, callback) {
 				prettifyUrls : true,
 				httpResponseHandler : (options.isDynamic === true) ? phantomHTML : '',
 				request : {
-					headers : {
-						'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0',
-						'Cookie' : options.cookie || ''
-					}
+					headers : headers
 				}
 			}, (error, result) => {
 				//오류가 있을 때
@@ -139,7 +147,7 @@ rl.question('주소 : ', (url) => {
 
 				scraper({
 					url : url,
-					cookie : cookie,
+					cookie : cookie || null,
 					isDynamic : isDynamic.toLowerCase() === 'true'
 				}, (result, saveDirectory) => {
 					//생성했을 때
