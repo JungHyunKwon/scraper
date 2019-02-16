@@ -115,11 +115,14 @@ function scraper(options, callback) {
 				}
 				
 				fs.stat(baseDirectory, (err, stats) => {
-					function run() {
+					//오류가 있을 때
+					if(err) {
+						console.error(baseDirectory + '가 있는지 확인해주세요.');
+					}else{
 						scrape(settings, (err, result) => {
 							//오류가 있을 때
 							if(err) {
-								console.error(err);
+								console.error('스크랩 중 오류가 발생하였습니다.');
 							
 							//저장되었을 때
 							}else if(result[0].saved) {
@@ -132,21 +135,7 @@ function scraper(options, callback) {
 							if(typeof callback === 'function') {
 								callback();
 							}
-						});	
-					}
-
-					//오류가 있을 때
-					if(err) {
-						fs.mkdir(baseDirectory, (err) => {
-							//오류가 있을 때
-							if(err) {
-								console.error(baseDirectory + '에 폴더를 생성할 수 없습니다.');
-							}else{
-								run();
-							}
 						});
-					}else{
-						run();
 					}
 				});
 			}else{
