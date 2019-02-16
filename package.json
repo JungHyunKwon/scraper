@@ -9,6 +9,7 @@
   "author": "JungHyunKwon",
   "license": "ISC",
   "dependencies": {
+    "filenamify": "^2.1.0",
     "website-scraper": "^3.3.3",
     "website-scraper-phantom": "^0.1.0"
   }

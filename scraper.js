@@ -10,7 +10,8 @@ const fs = require('fs'),
 	  URL = require('url'),
 	  scrape = require('website-scraper'), // {@link https://github.com/website-scraper/node-website-scraper}
 	  phantomHTML = require('website-scraper-phantom'), // {@link https://github.com/website-scraper/node-website-scraper-phantom}
-	  baseDirectory = './dist/',
+	  filenamify = require('filenamify'),
+	  baseDirectory = './dist',
 	  readline = require('readline'),
 	  rl = readline.createInterface({
 	      input : process.stdin,
@@ -40,15 +41,6 @@ function pad(value) {
 }
 
 /**
- * @name 유효한 파일명으로 거르기
- * @return {string}
- * @since 2018-07-13
- */
-function filterFilename(value) {
-	return (typeof value === 'string') ? value.replace(/[\/:"*?"<>|]/g, '') : '';
-}
-
-/**
  * @name 이름 얻기
  * @param {string} value
  * @return {string}
@@ -63,13 +55,25 @@ function getName(value) {
 		hour = pad(hours % 12 || 12),
 		meridiem = (hours >= 12) ? '오후' : '오전',
 		minute = pad(date.getMinutes()),
-		second = pad(date.getSeconds());
-
-	return (filterFilename(value) || 'unknown') + ' - ' + year + '년 ' + month + '월 ' + day + '일 ' + meridiem + ' ' + hour + '시 ' + minute + '분 ' + second + '초';
+		second = pad(date.getSeconds()),
+		name = 'unknown';
+	
+	//문자일 때
+	if(typeof value ==='string') {
+		name = filenamify(value, {
+			replacement : ''
+		}) || name;
+	}
+	
+	return name + ' - ' + year + '년 ' + month + '월 ' + day + '일 ' + meridiem + ' ' + hour + '시 ' + minute + '분 ' + second + '초';
 }
 
 /**
- * @param {obejct} options {url : string, cookie : string, isDynamic : boolean}
+ * @param {obejct} options {
+       url : string,
+	   cookie : string,
+	   isDynamic : boolean
+   }
  * @param {function} callback
  */
 function scraper(options, callback) {
@@ -79,56 +83,78 @@ function scraper(options, callback) {
 
 		//문자일 때
 		if(typeof url === 'string') {
-			let hasBaseDirectory = false,
-				saveDirectory = baseDirectory + getName(URL.parse(url).host),
-				cookie = options.cookie,
-				headers = {
-					'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0'
-				};
+			let hostname = URL.parse(url).hostname;
 			
-			//문자일 때
-			if(typeof cookie === 'string') {
-				headers.cookie = cookie;
-			}
+			//주소일 때
+			if(hostname) {
+				let directory = baseDirectory + '/' + getName(hostname);
 
-			try {
-				//폴더일 때
-				if(fs.statSync(baseDirectory).isDirectory()) {
-					hasBaseDirectory = true;
-				}
-
-			//폴더가 없으면 오류발생
-			}catch(e) {
-				//console.error(baseDirectory + '폴더가 없습니다.');
-			}
-
-			//baseDirectory 폴더가 없을 때 폴더생성
-			if(!hasBaseDirectory) {
-				fs.mkdirSync(baseDirectory);
-				//console.log(baseDirectory + '에 폴더를 생성 하였습니다.');
-			}
-			
-			scrape({
-				urls : url,
-				directory : saveDirectory,
-				updateMissingSources : true,
-				//recursive : true, //재귀
-				//ignoreErrors : false, //오류 무시
-				prettifyUrls : true,
-				httpResponseHandler : (options.isDynamic === true) ? phantomHTML : '',
-				request : {
-					headers : headers
-				}
-			}, (error, result) => {
-				//오류가 있을 때
-				if(error) {
-					console.error(error);
+				let cookie = options.cookie,
+					settings = {
+						urls : url,
+						directory : directory,
+						updateMissingSources : true,
+						//recursive : true, //재귀
+						ignoreErrors : false, //오류 무시
+						prettifyUrls : true,
+						request : {
+							headers : {
+								'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0'
+							}
+						}
+					};
 				
-				//함수일 때
-				}else if(typeof callback === 'function') {
-					callback(result[0].saved, saveDirectory);
+				//문자일 때
+				if(typeof cookie === 'string') {
+					settings.request.headers.cookie = cookie;
 				}
-			});
+				
+				//동적일 때
+				if(options.isDynamic === true) {
+					settings.httpResponseHandler = phantomHTML;
+				}
+				
+				fs.stat(baseDirectory, (err, stats) => {
+					function run() {
+						scrape(settings, (err, result) => {
+							let isSaved = result[0].saved;
+							
+							//오류가 있을 때
+							if(err) {
+								console.error(err);
+							}
+
+							//저장되었을 때
+							if(isSaved) {
+								console.log(directory + '에 저장했습니다.');
+							}else{
+								console.error(directory + '에 저장하지 못했습니다.');
+							}
+
+							//함수일 때
+							if(typeof callback === 'function') {
+								callback(isSaved);
+							}
+						});	
+					}
+
+					//오류가 있을 때
+					if(err) {
+						fs.mkdir(baseDirectory, (err) => {
+							//오류가 있을 때
+							if(err) {
+								console.error(baseDirectory + '에 폴더를 생성할 수 없습니다.');
+							}else{
+								run();
+							}
+						});
+					}else{
+						run();
+					}
+				});
+			}else{
+				console.error('options.url : 주소가 아닙니다.');
+			}
 		}else{
 			console.error('options.url : 문자가 아닙니다.');
 		}
@@ -143,22 +169,15 @@ rl.question('주소 : ', (url) => {
 	if(url) {
 		rl.question('쿠키 : ', (cookie) => {
 			rl.question('동적입니까? ', (isDynamic) => {
-				console.log('잠시만 기다려주세요.');
-
 				scraper({
 					url : url,
-					cookie : cookie || null,
-					isDynamic : isDynamic.toLowerCase() === 'true'
-				}, (result, saveDirectory) => {
-					//생성했을 때
-					if(result) {
-						console.log(saveDirectory + '에 생성하였습니다.');
-					}else{
-						console.error('스크랩에 실패하였습니다.');
-					}
-
-					rl.close();
+					isDynamic : isDynamic.toLowerCase() === 'true',
+					cookie : (cookie === 'null') ? null : cookie
+				}, (result) => {
+					console.log('작업을 완료하였습니다.');
 				});
+
+				rl.close();
 			});
 		});
 	}else{
