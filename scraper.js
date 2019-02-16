@@ -95,7 +95,7 @@ function scraper(options, callback) {
 						directory : directory,
 						updateMissingSources : true,
 						//recursive : true, //재귀
-						ignoreErrors : false, //오류 무시
+						//ignoreErrors : false, //오류 무시
 						prettifyUrls : true,
 						request : {
 							headers : {
@@ -117,23 +117,20 @@ function scraper(options, callback) {
 				fs.stat(baseDirectory, (err, stats) => {
 					function run() {
 						scrape(settings, (err, result) => {
-							let isSaved = result[0].saved;
-							
 							//오류가 있을 때
 							if(err) {
 								console.error(err);
-							}
-
+							
 							//저장되었을 때
-							if(isSaved) {
+							}else if(result[0].saved) {
 								console.log(directory + '에 저장했습니다.');
 							}else{
-								console.error(directory + '에 저장하지 못했습니다.');
+								console.error(baseDirectory + '에 저장하지 못했습니다.');
 							}
 
 							//함수일 때
 							if(typeof callback === 'function') {
-								callback(isSaved);
+								callback();
 							}
 						});	
 					}
@@ -173,7 +170,7 @@ rl.question('주소 : ', (url) => {
 					url : url,
 					isDynamic : isDynamic.toLowerCase() === 'true',
 					cookie : (cookie === 'null') ? null : cookie
-				}, (result) => {
+				}, () => {
 					console.log('작업을 완료하였습니다.');
 				});
 
