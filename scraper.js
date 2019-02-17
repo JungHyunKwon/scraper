@@ -87,57 +87,57 @@ function scraper(options, callback) {
 			
 			//주소일 때
 			if(hostname) {
-				let directory = baseDirectory + '/' + getName(hostname);
-
-				let cookie = options.cookie,
-					settings = {
-						urls : url,
-						directory : directory,
-						updateMissingSources : true,
-						//recursive : true, //재귀
-						//ignoreErrors : false, //오류 무시
-						prettifyUrls : true,
-						request : {
-							headers : {
-								'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0'
+				//함수일 때
+				if(typeof callback === 'function') {
+					let saveDirectory = baseDirectory + '/' + getName(hostname),
+						cookie = options.cookie,
+						settings = {
+							urls : url,
+							directory : saveDirectory,
+							updateMissingSources : true,
+							//recursive : true, //재귀
+							//ignoreErrors : false, //오류 무시
+							prettifyUrls : true,
+							request : {
+								headers : {
+									'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0'
+								}
 							}
-						}
-					};
-				
-				//문자일 때
-				if(typeof cookie === 'string') {
-					settings.request.headers.cookie = cookie;
-				}
-				
-				//동적일 때
-				if(options.isDynamic === true) {
-					settings.httpResponseHandler = phantomHTML;
-				}
-				
-				fs.stat(baseDirectory, (err, stats) => {
-					//오류가 있을 때
-					if(err) {
-						console.error(baseDirectory + '가 있는지 확인해주세요.');
-					}else{
-						scrape(settings, (err, result) => {
-							//오류가 있을 때
-							if(err) {
-								console.error('스크랩 중 오류가 발생하였습니다.');
-							
-							//저장되었을 때
-							}else if(result[0].saved) {
-								console.log(directory + '에 저장했습니다.');
-							}else{
-								console.error(baseDirectory + '에 저장하지 못했습니다.');
-							}
-
-							//함수일 때
-							if(typeof callback === 'function') {
-								callback();
-							}
-						});
+						};
+					
+					//문자일 때
+					if(typeof cookie === 'string') {
+						settings.request.headers.cookie = cookie;
 					}
-				});
+					
+					//동적일 때
+					if(options.isDynamic === true) {
+						settings.httpResponseHandler = phantomHTML;
+					}
+					
+					fs.stat(baseDirectory, (err, stats) => {
+						//오류가 있을 때
+						if(err) {
+							console.error(baseDirectory + '가 있는지 확인해주세요.');
+						}else{
+							scrape(settings, (err, result) => {
+								let isSaved = false;
+
+								//오류가 없으면서 저장되었을 때
+								if(!err && result[0].saved) {
+									isSaved = true;
+								}
+
+								callback({
+									saveDirectory : saveDirectory,
+									isSaved : isSaved
+								});
+							});
+						}
+					});
+				}else{
+					console.error('callback : 함수가 아닙니다.');
+				}
 			}else{
 				console.error('options.url : 주소가 아닙니다.');
 			}
@@ -159,8 +159,13 @@ rl.question('주소 : ', (url) => {
 					url : url,
 					isDynamic : isDynamic.toLowerCase() === 'true',
 					cookie : (cookie === 'null') ? null : cookie
-				}, () => {
-					console.log('작업을 완료하였습니다.');
+				}, (result) => {
+					//저장했을 때
+					if(result.isSaved) {
+						console.log(result.saveDirectory + '에 저장했습니다.');
+					}else{
+						console.error(baseDirectory + '에 저장하지 못했습니다.');
+					}
 				});
 
 				rl.close();
@@ -168,6 +173,7 @@ rl.question('주소 : ', (url) => {
 		});
 	}else{
 		console.error('주소를 입력해주세요.');
+
 		rl.close();
 	}
 });
