@@ -19,16 +19,26 @@ const fs = require('fs'),
 	  });
 
 /**
+ * @name 숫자 확인
+ * @since 2017-12-06
+ * @param {*} value
+ * @return {boolean}
+ */
+function isNumeric(value) {
+	return typeof value === 'number' && !isNaN(value) && isFinite(value);
+}
+
+/**
  * @name 10미만 0 붙이기
  * @param {number} value
- * @return {number}
+ * @return {number || string}
  * @since 2018-07-13
  */
 function pad(value) {
-	let result = NaN;
+	var result = NaN;
 	
-	//NaN이 아닐 때
-	if(typeof value === 'number' && !isNaN(value)) {
+	//숫자이면서 0초과이면서 10미만일 때
+	if(isNumeric(value)) {
 		//0초과이면서 10미만일 때
 		if(value > 0 && 10 > value) {
 			result = '0' + value;	
