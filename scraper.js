@@ -7,7 +7,6 @@
 'use strict';
 
 const fs = require('fs'),
-	  URL = require('url'),
 	  scrape = require('website-scraper'), // {@link https://github.com/website-scraper/node-website-scraper}
 	  phantomHTML = require('website-scraper-phantom'), // {@link https://github.com/website-scraper/node-website-scraper-phantom}
 	  filenamify = require('filenamify'), // {@link https://github.com/sindresorhus/filenamify}
@@ -93,7 +92,7 @@ function scraper(options, callback) {
 
 		//문자일 때
 		if(typeof url === 'string') {
-			let hostname = URL.parse(url).hostname;
+			let hostname = require('url').parse(url).hostname;
 			
 			//주소일 때
 			if(hostname) {
