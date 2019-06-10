@@ -7,10 +7,12 @@
 'use strict';
 
 const fs = require('fs'),
+	  URL = require('url'),
 	  scrape = require('website-scraper'), // {@link https://github.com/website-scraper/node-website-scraper}
 	  phantomHTML = require('website-scraper-phantom'), // {@link https://github.com/website-scraper/node-website-scraper-phantom}
 	  filenamify = require('filenamify'), // {@link https://github.com/sindresorhus/filenamify}
 	  baseDirectory = './dist',
+	  userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0',
 	  readline = require('readline'),
 	  rl = readline.createInterface({
 	      input : process.stdin,
@@ -83,97 +85,71 @@ function getName(value) {
 	   cookie : string,
 	   isDynamic : boolean
    }
- * @param {function} callback
+ * @param {function} callback {string}
  */
 function scraper(options, callback) {
+	let callbackIsFunction = typeof callback === 'function',
+		result = '';
+
 	//객체일 때
 	if(options) {
-		let url = options.url;
-
-		//문자일 때
-		if(typeof url === 'string') {
-			let hostname = require('url').parse(url).hostname;
-			
-			//주소일 때
-			if(hostname) {
-				//함수일 때
-				if(typeof callback === 'function') {
-					let saveDirectory = baseDirectory + '/' + getName(hostname),
-						cookie = options.cookie,
-						settings = {
-							urls : url,
-							directory : saveDirectory,
-							updateMissingSources : true,
-							//recursive : true, //재귀
-							//ignoreErrors : false, //오류 무시
-							prettifyUrls : true,
-							request : {
-								headers : {
-									'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0'
-								}
-							}
-						};
-					
-					//문자일 때
-					if(typeof cookie === 'string') {
-						settings.request.headers.cookie = cookie;
+		let url = options.url,
+			saveDirectory = baseDirectory + '/' + getName(URL.parse(url).hostname),
+			cookie = options.cookie,
+			settings = {
+				urls : url,
+				directory : saveDirectory,
+				updateMissingSources : true,
+				//recursive : true, //재귀
+				//ignoreErrors : false, //오류 무시
+				prettifyUrls : true,
+				request : {
+					headers : {
+						'User-Agent' : userAgent
 					}
-					
-					//동적일 때
-					if(options.isDynamic === true) {
-						settings.httpResponseHandler = phantomHTML;
-					}
-					
-					fs.stat(baseDirectory, (err, stats) => {
-						//오류가 있을 때
-						if(err) {
-							console.error(baseDirectory + '가 있는지 확인해주세요.');
-						}else{
-							scrape(settings, (err, result) => {
-								let isSaved = false;
-
-								//오류가 없으면서 저장되었을 때
-								if(!err && result[0].saved) {
-									isSaved = true;
-								}
-
-								callback({
-									saveDirectory : saveDirectory,
-									isSaved : isSaved
-								});
-							});
-						}
-					});
-				}else{
-					console.error('callback : 함수가 아닙니다.');
 				}
-			}else{
-				console.error('options.url : 주소가 아닙니다.');
+			};
+
+			//문자일 때
+			if(typeof cookie === 'string') {
+				settings.request.headers.cookie = cookie;
 			}
-		}else{
-			console.error('options.url : 문자가 아닙니다.');
-		}
-	}else{
-		console.error('options : 객체가 아닙니다.');
+			
+			//동적일 때
+			if(options.isDynamic === true) {
+				settings.httpResponseHandler = phantomHTML;
+			}
+
+			scrape(settings, (err, result) => {
+				//오류가 없으면서 저장되었을 때
+				if(!err && result[0].saved) {
+					result = saveDirectory;
+				}
+
+				callback(result);
+			});
+	//함수일 때
+	}else if(callbackIsFunction) {
+		callback(result);
 	}
 }
 
 //질문
-rl.question('주소 : ', (url) => {
+rl.question('주소 : ', url => {
 	//값이 있을 때
 	if(url) {
-		rl.question('쿠키 : ', (cookie) => {
-			rl.question('동적입니까? ', (isDynamic) => {
+		rl.question('쿠키 : ', cookie => {
+			rl.question('동적입니까? ', isDynamic => {
 				scraper({
 					url : url,
 					isDynamic : isDynamic.toLowerCase() === 'true',
-					cookie : (cookie === 'null') ? null : cookie
-				}, (result) => {
+					cookie : (cookie) ? cookie : null
+				}, result => {
 					//저장했을 때
-					if(result.isSaved) {
-						console.log(result.saveDirectory + '에 저장했습니다.');
+					if(result) {
+						console.log(result + '에 저장했습니다.');
 					}else{
-						console.error(baseDirectory + '에 저장하지 못했습니다.');
+						console.error(result + '에 저장하지 못했습니다.');
 					}
 				});
 
@@ -181,7 +157,7 @@ rl.question('주소 : ', (url) => {
 			});
 		});
 	}else{
-		console.error('주소를 입력해주세요.');
+		console.error('주소를 입력해주세요');
 
 		rl.close();
 	}
