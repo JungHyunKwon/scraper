@@ -11,7 +11,7 @@ const fs = require('fs'),
 	  scrape = require('website-scraper'), // {@link https://github.com/website-scraper/node-website-scraper}
 	  PhantomPlugin = require('website-scraper-phantom'), // {@link https://github.com/website-scraper/node-website-scraper-phantom}
 	  filenamify = require('filenamify'), // {@link https://github.com/sindresorhus/filenamify}
-	  distDirectory = './dist',
+	  baseDirectory = './dist',
 	  userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0',
 	  readline = require('readline'),
 	  rl = readline.createInterface({
@@ -85,7 +85,7 @@ rl.question('주소 : ', url => {
 	if(url) {
 		rl.question('쿠키 : ', cookie => {
 			rl.question('동적입니까? ', isDynamic => {
-				let saveDirectory = distDirectory + '/' + getName(URL.parse(url).hostname),
+				let saveDirectory = baseDirectory + '/' + getName(URL.parse(url).hostname),
 					headers = {
 						'User-Agent' : userAgent
 					},
