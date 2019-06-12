@@ -7,7 +7,7 @@
 'use strict';
 
 const fs = require('fs'),
-	  URL = require('url'),
+	  url = require('address'),
 	  scrape = require('website-scraper'), // {@link https://github.com/website-scraper/node-website-scraper}
 	  PhantomPlugin = require('website-scraper-phantom'), // {@link https://github.com/website-scraper/node-website-scraper-phantom}
 	  filenamify = require('filenamify'), // {@link https://github.com/sindresorhus/filenamify}
@@ -80,17 +80,17 @@ function getName(value) {
 }
 
 //질문
-rl.question('주소 : ', url => {
+rl.question('주소 : ', address => {
 	//값이 있을 때
-	if(url) {
+	if(address) {
 		rl.question('쿠키 : ', cookie => {
 			rl.question('동적입니까? ', isDynamic => {
-				let saveDirectory = baseDirectory + '/' + getName(URL.parse(url).hostname),
+				let saveDirectory = baseDirectory + '/' + getName(url.parse(address).hostname),
 					headers = {
 						'User-Agent' : userAgent
 					},
 					settings = {
-						urls : url,
+						addresss : address,
 						directory : saveDirectory,
 						request : {
 							headers : headers
