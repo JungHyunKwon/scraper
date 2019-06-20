@@ -7,7 +7,7 @@
 'use strict';
 
 const fs = require('fs'),
-	  url = require('address'),
+	  url = require('url'),
 	  scrape = require('website-scraper'), // {@link https://github.com/website-scraper/node-website-scraper}
 	  PhantomPlugin = require('website-scraper-phantom'), // {@link https://github.com/website-scraper/node-website-scraper-phantom}
 	  filenamify = require('filenamify'), // {@link https://github.com/sindresorhus/filenamify}
@@ -90,7 +90,7 @@ rl.question('주소 : ', address => {
 						'User-Agent' : userAgent
 					},
 					settings = {
-						addresss : address,
+						urls : address,
 						directory : saveDirectory,
 						request : {
 							headers : headers
