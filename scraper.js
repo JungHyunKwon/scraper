@@ -114,9 +114,9 @@ rl.question('주소 : ', address => {
 					}else{
 						console.log(saveDirectory + '에 저장했습니다.');
 					}
-				});
 
-				rl.close();
+					rl.close();
+				});
 			});
 		});
 	}else{
