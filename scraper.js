@@ -108,8 +108,8 @@ rl.question('주소 : ', address => {
 				}
 
 				scrape(settings, (err, result) => {
-					//오류가 있을 때
-					if(err) {
+					//오류가 있거나 저장하지 못했을 때
+					if(err || !result.saved) {
 						console.error(saveDirectory + '에 저장하지 못했습니다.');
 					}else{
 						console.log(saveDirectory + '에 저장했습니다.');
