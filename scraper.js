@@ -109,7 +109,7 @@ rl.question('주소 : ', address => {
 
 				scrape(settings, (err, result) => {
 					//오류가 있거나 저장하지 못했을 때
-					if(err || !result.saved) {
+					if(err || !result[0].saved) {
 						console.error(saveDirectory + '에 저장하지 못했습니다.');
 					}else{
 						console.log(saveDirectory + '에 저장했습니다.');
