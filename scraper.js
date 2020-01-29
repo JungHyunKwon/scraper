@@ -11,9 +11,9 @@ const fs = require('fs'),
 	  scrape = require('website-scraper'), // {@link https://github.com/website-scraper/node-website-scraper}
 	  PhantomPlugin = require('website-scraper-phantom'), // {@link https://github.com/website-scraper/node-website-scraper-phantom}
 	  filenamify = require('filenamify'), // {@link https://github.com/sindresorhus/filenamify}
-	  baseDirectory = './dist',
-	  userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0',
 	  readline = require('readline'),
+  	  baseDir = './dist',
+	  uA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0',
 	  rl = readline.createInterface({
 	      input : process.stdin,
 		  output : process.stdout
@@ -36,16 +36,12 @@ function isNumeric(value) {
  * @since 2018-07-13
  */
 function pad(value) {
-	var result = NaN;
+	let result = NaN;
 	
-	//숫자이면서 0초과이면서 10미만일 때
+	//숫자일 때
 	if(isNumeric(value)) {
-		//0초과이면서 10미만일 때
-		if(value > 0 && 10 > value) {
-			result = '0' + value;	
-		}else{
-			result = value;
-		}
+		//0 보다 크면서 10 보다 작을 때
+		result = (value > 0 && 10 > value) ? result = '0' + value : value;
 	}
 
 	return result;
@@ -59,24 +55,12 @@ function pad(value) {
  */
 function getName(value) {
 	let date = new Date(),
-		year = date.getFullYear(),
-		month = pad(date.getMonth() + 1),
-		day = pad(date.getDate()),
-		hours = date.getHours(),
-		hour = pad(hours % 12 || 12),
-		meridiem = (hours >= 12) ? '오후' : '오전',
-		minute = pad(date.getMinutes()),
-		second = pad(date.getSeconds()),
-		name = 'unknown';
+		hours = date.getHours();
 	
 	//문자일 때
-	if(typeof value ==='string') {
-		name = filenamify(value, {
-			replacement : ''
-		}) || name;
-	}
-	
-	return name + ' - ' + year + '년 ' + month + '월 ' + day + '일 ' + meridiem + ' ' + hour + '시 ' + minute + '분 ' + second + '초';
+	return ((typeof value ==='string') ? filenamify(value, {
+		replacement : ''
+	}) : 'unknown') + ' - ' + date.getFullYear() + '년 ' + pad(date.getMonth() + 1) + '월 ' + pad(date.getDate()) + '일 ' + ((hours >= 12) ? '오후' : '오전') + ' ' + pad(hours % 12 || 12) + '시 ' + pad(date.getMinutes()) + '분 ' + pad(date.getSeconds()) + '초';
 }
 
 //질문
@@ -84,14 +68,14 @@ rl.question('주소 : ', address => {
 	//값이 있을 때
 	if(address) {
 		rl.question('쿠키 : ', cookie => {
-			rl.question('동적입니까? ', isDynamic => {
-				let saveDirectory = baseDirectory + '/' + getName(url.parse(address).hostname),
+			rl.question('동적입니까? ', dynamic => {
+				let saveDir = baseDir + '/' + getName(url.parse(address).hostname),
 					headers = {
-						'User-Agent' : userAgent
+						'User-Agent' : uA
 					},
 					settings = {
 						urls : address,
-						directory : saveDirectory,
+						directory : saveDir,
 						request : {
 							headers : headers
 						}
@@ -103,16 +87,16 @@ rl.question('주소 : ', address => {
 				}
 
 				//참일 때
-				if(isDynamic === 'true') {
+				if(dynamic === 'true') {
 					settings.httpResponseHandler = PhantomPlugin;
 				}
 
 				scrape(settings, (err, result) => {
 					//오류가 있거나 저장하지 못했을 때
 					if(err || !result[0].saved) {
-						console.error(saveDirectory + '에 저장하지 못했습니다.');
+						console.error(saveDir + '에 저장하지 못했습니다.');
 					}else{
-						console.log(saveDirectory + '에 저장했습니다.');
+						console.log(saveDir + '에 저장했습니다.');
 					}
 
 					rl.close();
