@@ -7,7 +7,7 @@
 'use strict';
 
 const fs = require('fs'),
-	  url = require('url'),
+	  {parse} = url,
 	  scrape = require('website-scraper'), // {@link https://github.com/website-scraper/node-website-scraper}
 	  PhantomPlugin = require('website-scraper-phantom'), // {@link https://github.com/website-scraper/node-website-scraper-phantom}
 	  filenamify = require('filenamify'), // {@link https://github.com/sindresorhus/filenamify}
@@ -54,27 +54,33 @@ function pad(value) {
  * @since 2018-07-10
  */
 function getName(value) {
-	let date = new Date(),
-		hours = date.getHours();
+	let result = '';
 	
 	//문자일 때
-	return ((typeof value ==='string') ? filenamify(value, {
-		replacement : ''
-	}) : 'unknown') + ' - ' + date.getFullYear() + '년 ' + pad(date.getMonth() + 1) + '월 ' + pad(date.getDate()) + '일 ' + ((hours >= 12) ? '오후' : '오전') + ' ' + pad(hours % 12 || 12) + '시 ' + pad(date.getMinutes()) + '분 ' + pad(date.getSeconds()) + '초';
+	if(typeof value ==='string') {
+		let date = new Date(),
+			hours = date.getHours();
+
+		result = filenamify(value, {
+			replacement : ''
+		}) + ' - ' + date.getFullYear() + '년 ' + pad(date.getMonth() + 1) + '월 ' + pad(date.getDate()) + '일 ' + ((hours >= 12) ? '오후' : '오전') + ' ' + pad(hours % 12 || 12) + '시 ' + pad(date.getMinutes()) + '분 ' + pad(date.getSeconds()) + '초';
+	}
+
+	return result;
 }
 
 //질문
-rl.question('주소 : ', address => {
+rl.question('주소 : ', url => {
 	//값이 있을 때
-	if(address) {
+	if(url) {
 		rl.question('쿠키 : ', cookie => {
 			rl.question('동적입니까? ', dynamic => {
-				let saveDir = baseDir + '/' + getName(url.parse(address).hostname),
+				let saveDir = baseDir + '/' + getName(parse(url).hostname),
 					headers = {
 						'User-Agent' : uA
 					},
 					settings = {
-						urls : address,
+						urls : url,
 						directory : saveDir,
 						request : {
 							headers : headers
@@ -96,7 +102,7 @@ rl.question('주소 : ', address => {
 					if(err || !result[0].saved) {
 						console.error(saveDir + '에 저장하지 못했습니다.');
 					}else{
-						console.log(saveDir + '에 저장했습니다.');
+						console.log(saveDir + '에 저장하였습니다.');
 					}
 
 					rl.close();
