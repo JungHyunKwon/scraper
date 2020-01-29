@@ -6,8 +6,7 @@
 
 'use strict';
 
-const fs = require('fs'),
-	  {parse} = url,
+const urlParse = require('url').parse,
 	  scrape = require('website-scraper'), // {@link https://github.com/website-scraper/node-website-scraper}
 	  PhantomPlugin = require('website-scraper-phantom'), // {@link https://github.com/website-scraper/node-website-scraper-phantom}
 	  filenamify = require('filenamify'), // {@link https://github.com/sindresorhus/filenamify}
@@ -75,7 +74,7 @@ rl.question('주소 : ', url => {
 	if(url) {
 		rl.question('쿠키 : ', cookie => {
 			rl.question('동적입니까? ', dynamic => {
-				let saveDir = baseDir + '/' + getName(parse(url).hostname),
+				let saveDir = baseDir + '/' + getName(urlParse(url).hostname),
 					headers = {
 						'User-Agent' : uA
 					},
